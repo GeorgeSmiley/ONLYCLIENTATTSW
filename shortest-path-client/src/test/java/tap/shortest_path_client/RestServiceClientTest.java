@@ -2,15 +2,10 @@ package tap.shortest_path_client;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class RestServiceClientTest {

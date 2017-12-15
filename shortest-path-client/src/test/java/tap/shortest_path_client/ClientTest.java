@@ -1,15 +1,16 @@
 package tap.shortest_path_client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.google.gson.Gson;
 
 
 public class ClientTest {
@@ -39,7 +40,21 @@ public class ClientTest {
 		verify(service,times(1)).doGet(Request.REQUEST_ALL, null);
 		
 	}
-	
+	@Test
+	public void testGetPathWhenIsNull() throws IOException {
+		
+		when(service.doGet(Request.REQUEST_PATH, Mockito.anyString()+"TO"+Mockito.anyString())).thenReturn("null");
+		Node r=client.getShortestPath("", "");
+		assertNull(r);
+		
+	}
+	@Test
+	public void testGetPathWhenExists() throws IOException {
+		when(service.doGet(Request.REQUEST_PATH, Mockito.anyString()+"TO"+Mockito.anyString())).thenReturn("\"name\":\"path\"");
+		Node r=client.getShortestPath("", "");
+		Node expected=new Node("path");
+		assertEquals(expected,r);
+	}
 	
 	
 	
