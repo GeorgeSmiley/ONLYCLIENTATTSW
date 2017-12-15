@@ -1,12 +1,10 @@
 package tap.shortest_path_client;
 
+
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -107,5 +105,4 @@ public class RestServiceClient implements IRestServiceClient {
 	}
 
 	
-
 }
