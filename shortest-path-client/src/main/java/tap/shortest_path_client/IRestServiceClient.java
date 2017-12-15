@@ -7,6 +7,6 @@ import com.google.gson.JsonElement;
 public interface IRestServiceClient {
 	public void connect() throws IOException;
 	public JsonElement doPost(int request, String args) throws IOException;
-	public void disconnect() throws IOException;
+	
 
 }
