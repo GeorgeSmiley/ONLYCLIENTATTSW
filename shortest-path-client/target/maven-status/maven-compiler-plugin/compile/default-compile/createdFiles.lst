@@ -1,0 +1,11 @@
+tap/shortest_path_client/App.class
+tap/shortset_path_client/graphtools/GraphBuilder.class
+tap/shortest_path_client/Node.class
+tap/shortes_path_client/gui/GUI.class
+tap/shortes_path_client/gui/GUIpanel.class
+tap/shortest_path_client/IClient.class
+tap/shortest_path_client/Client.class
+tap/shortest_path_client/IRestServiceClient.class
+tap/shortest_path_client/Request.class
+tap/shortest_path_client/RestServiceClient.class
+tap/shortes_path_client/gui/EnablingPoint.class
