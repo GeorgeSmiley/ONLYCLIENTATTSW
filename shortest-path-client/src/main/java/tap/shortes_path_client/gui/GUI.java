@@ -10,7 +10,7 @@ public class GUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private GUIpanel panel;
 	public GUI() {
-		panel=new GUIpanel();
+		panel=new GUIpanel(10);
 	}
 
 }
