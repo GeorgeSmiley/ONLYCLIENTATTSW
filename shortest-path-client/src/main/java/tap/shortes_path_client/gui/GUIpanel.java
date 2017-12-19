@@ -1,6 +1,7 @@
 package tap.shortes_path_client.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -22,7 +23,9 @@ public class GUIpanel extends JPanel {
 	private LinkedList<Point> track;
 	private String last_mov;
 	public GUIpanel(int MAX_SIZE) {
+		
 		setBackground(Color.WHITE);
+		setPreferredSize(new Dimension(1024,600));
 		GRIDSIZE=MAX_SIZE;
 		act_y=GRIDSIZE/10;
 		act_x=GRIDSIZE/10;
@@ -36,7 +39,7 @@ public class GUIpanel extends JPanel {
 		for(int i=0; i<MAX_SIZE;i++) {
 			for(int j=0; j<MAX_SIZE;j++)
 			{
-				GRID[j][i]=new EnablingPoint(i*distance,j*distance);
+				GRID[i][j]=new EnablingPoint(i*distance,j*distance);
 			}
 		}
 		
@@ -44,54 +47,43 @@ public class GUIpanel extends JPanel {
 	
 		
 	
-	public void enablePoint(String toPrintInPoint) {
+	public void enablePoint(String toPrintInPoint, int i, int j, Color col) {
 		
-		if(GRID[act_x][act_y].isEnabled()){
-			//throw new IllegalArgumentException("Point in ("+act_x+","+act_y+") is still enabled");
+		if(GRID[act_y][act_x].isEnabled()){
+			switch(last_mov) {
+			case "left": moveLeft(); break;
+			case "right": moveRight(); break;
+			case "down": moveDown(); break;
+			case "up": moveUp(); break;
+			
+			}
 		}
-		GRID[act_y][act_x].enable();
-		GRID[act_y][act_x].setName(toPrintInPoint);
+		GRID[5+j][5+i].enable();
+		GRID[j+5][i+5].setName(toPrintInPoint);
+		GRID[j+5][i+5].setColor(col);
 		track.add(GRID[act_y][act_x].getPoint());
 
 		repaint();
 		
 	}
 
-	private void drawGrid(Graphics g) {
-		g.setColor(Color.LIGHT_GRAY);
-		for(int i=0; i<GRIDSIZE;i++) {
-			EnablingPoint[] actLine=GRID[i];
-			g.drawLine(actLine[0].getX(), actLine[0].getY(), actLine[GRIDSIZE-1].getX(), actLine[0].getY());
-		}
-		int start_y=GRID[0][0].getY();
-		int end_y= GRID[GRIDSIZE-1][0].getY();
-		for(int i=0; i<GRIDSIZE;i++) {
-			int act_x=GRID[0][i].getX();
-			
-			g.drawLine(act_x, start_y, act_x, end_y);
-		}
-		
-		g.setColor(Color.BLACK);
-	}
+	
 	public void paintComponent(Graphics g) {
-		drawGrid(g);
+
 		for(int i=0; i<GRIDSIZE;i++)
 		{
 			for(int j=0; j<GRIDSIZE;j++)
 			{
 				if(GRID[i][j].isEnabled())
 				{
+					
 					GRID[i][j].draw(g, 8, 8);
 				}
+				
 			}
 		}
-		for(int i=0; i<track.size()-1;i++)
-		{
-			Point p1,p2;
-			p1=track.get(i);
-			p2=track.get(i+1);
-			g.drawLine(p1.x, p1.y, p2.x, p2.y);
-		}
+	
+		
 		
 	}
 	public void moveLeft() {
@@ -141,6 +133,7 @@ public class GUIpanel extends JPanel {
 				break;
 			}
 			}
+			
 		}
 		
 	}

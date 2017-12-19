@@ -1,5 +1,6 @@
 package tap.shortes_path_client.gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
@@ -20,6 +21,7 @@ public class EnablingPoint {
 		this.y = y;
 	}
 	private boolean isEnabled;
+	private Color col;
 	public EnablingPoint(int x, int y) {
 		this.x=x;
 		this.y=y;
@@ -35,6 +37,7 @@ public class EnablingPoint {
 		return isEnabled;
 	}
 	public void draw(Graphics g,int width,int height) {
+		g.setColor(col);
 		g.fillOval(this.x-width/2, this.y-height/2, width, height);
 		g.drawString(name, x, y);
 	}
@@ -46,6 +49,10 @@ public class EnablingPoint {
 	}
 	public Point getPoint() {
 		return new Point(x,y);
+	}
+	public void setColor(Color col) {
+		this.col=col;
+		
 	}
 
 }

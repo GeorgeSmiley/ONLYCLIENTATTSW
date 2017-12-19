@@ -1,9 +1,13 @@
 package tap.shortest_path_client;
 
 import java.io.IOException;
+import java.util.List;
+
+import com.google.gson.JsonSyntaxException;
 
 public interface IClient {
-	public Node getAllNodes() throws IOException;
-	public Node getShortestPath(String fromName, String toName) throws IOException;
+	public List<String> getAllTables() throws JsonSyntaxException, IOException;
+	public GridFromServer retrieveGrid(String name) throws JsonSyntaxException, IOException;
+	public List<String> getShortestPath(String fromName, String toName)throws JsonSyntaxException, IOException;
 
 }
