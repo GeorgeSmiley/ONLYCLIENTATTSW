@@ -23,39 +23,5 @@ public class GraphBuilder {
 	    
 	}
 	
-	/*
-	public static void main(String[] args)
-	{
-		
-		
-		GUIpanel p=initFrame();
-		GridFromServer mat=new GridFromServer(
-				new int[][] {
-					{1,0,0,0,1,0,0,0,1},
-					{0,1,0,0,0,0,0,1,0},
-					{1,0,0,0,1,0,0,0,1},
-					{0,1,0,0,0,0,0,1,0},
-					{1,0,0,0,1,0,0,0,1},
-					{0,1,0,0,0,0,0,1,0},
-					{1,0,0,0,1,0,0,0,1},
-					{0,1,0,0,0,0,0,1,0},
-				}
-				);
-		new GraphBuilder().makeGraph(mat, p);
-		
-		
-	}
-	private static GUIpanel initFrame() {
-		JFrame frame=new JFrame();
-		GUIpanel pan;
-		frame.setLocation(50,50);
-		frame.setSize(1024, 800);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(new JPanel(),BorderLayout.WEST);
-		frame.add(pan=new GUIpanel(30),BorderLayout.CENTER);
-		frame.setVisible(true);
-		return pan;
-		
-	}
-	*/ 
+	
 }

@@ -3,10 +3,8 @@ package tap.shortes_path_client.gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.util.LinkedList;
+import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 
@@ -14,59 +12,52 @@ import javax.swing.JPanel;
 
 public class GUIpanel extends JPanel {
 
-	private EnablingPoint[][] GRID;
-
-
+	private ColoredPoint[][] GRID;
 	private int GRIDSIZE;
-	private int act_x;
-	private int act_y;
-	private LinkedList<Point> track;
-	private String last_mov;
-	public GUIpanel(int MAX_SIZE) {
-		
-		setBackground(Color.WHITE);
+	private int offset_x,offset_y;
+	public GUIpanel(int MAX_SIZE, int offset_x, int offset_y) {
 		setPreferredSize(new Dimension(1024,600));
 		GRIDSIZE=MAX_SIZE;
-		act_y=GRIDSIZE/10;
-		act_x=GRIDSIZE/10;
+		this.offset_x=offset_x;
+		this.offset_y=offset_y;
 		initGrid(MAX_SIZE);
-		this.last_mov="";
-		track=new LinkedList<Point>();
+		
 	}
 	private void initGrid(int MAX_SIZE) {
-		int distance=(int)(10*Math.sqrt(MAX_SIZE));
-		GRID=new EnablingPoint[MAX_SIZE][MAX_SIZE];
+		int distance=(int)(7*Math.sqrt(MAX_SIZE));
+		GRID=new ColoredPoint[MAX_SIZE][MAX_SIZE];
 		for(int i=0; i<MAX_SIZE;i++) {
 			for(int j=0; j<MAX_SIZE;j++)
 			{
-				GRID[i][j]=new EnablingPoint(i*distance,j*distance);
+				GRID[i][j]=new ColoredPoint(offset_x+i*distance,offset_y+j*distance,getBackground());
 			}
 		}
 		
 	}
 	
 		
-	
+	public void reset() {
+		for(int i=0; i<GRIDSIZE; i++) {
+			for(int j=0; j<GRIDSIZE;j++) {
+				GRID[i][j].setColor(getBackground());
+			}
+		}
+		setVisible(false);
+		repaint();
+		setVisible(true);
+		
+	}
 	public void enablePoint(String toPrintInPoint, int i, int j, Color col) {
 		
-		if(GRID[act_y][act_x].isEnabled()){
-			switch(last_mov) {
-			case "left": moveLeft(); break;
-			case "right": moveRight(); break;
-			case "down": moveDown(); break;
-			case "up": moveUp(); break;
-			
-			}
-		}
-		GRID[5+j][5+i].enable();
-		GRID[j+5][i+5].setName(toPrintInPoint);
-		GRID[j+5][i+5].setColor(col);
-		track.add(GRID[act_y][act_x].getPoint());
-
+		
+		GRID[i][j].setName(toPrintInPoint);
+		GRID[i][j].setColor(col);
+		setVisible(false);
 		repaint();
+		setVisible(true);
+		
 		
 	}
-
 	
 	public void paintComponent(Graphics g) {
 
@@ -74,72 +65,42 @@ public class GUIpanel extends JPanel {
 		{
 			for(int j=0; j<GRIDSIZE;j++)
 			{
-				if(GRID[i][j].isEnabled())
-				{
-					
-					GRID[i][j].draw(g, 8, 8);
+				GRID[i][j].draw(g, 8, 8);
+			}
+		}
+	
+		
+		
+	}
+	public void highlightPath(List<String> path) {
+		
+		if(path==null) {
+			for(int i=0; i<GRIDSIZE;i++) {
+				for(int j=0; j<GRIDSIZE;j++) {
+					if(GRID[i][j].getCol().equals(Color.GREEN)) {
+						GRID[i][j].setColor(Color.RED);
+					}
 				}
-				
 			}
 		}
-	
-		
-		
-	}
-	public void moveLeft() {
-		this.act_x--;
-
-		this.last_mov="left";
-	}
-	public void moveRight() {
-		this.act_x++;
-
-		this.last_mov="right";
-	}
-	public void moveUp() {
-		this.last_mov="up";
-
-		this.act_y--;
-	}
-	public void moveDown() {
-		this.last_mov="down";
-
-		this.act_y++;
-	}
-	public int getActX() {
-		return act_x;
-	}
-	public int getActY() {
-		return act_y;
-	}
-	public void undoLast() {
-		if(!last_mov.equals(""))
+		else
 		{
-			switch(last_mov) {
-			case "left":{
-				moveRight();
-				break;
+			for(String e:path) {
+				int i=e.charAt(0)-48;
+				int j=e.charAt(2)-48;
+				GRID[i][j].setColor(Color.GREEN);
 			}
-			case "right":{
-				moveLeft();
-				break;
-			}
-			case "up":{
-				moveDown();
-				break;
-			}
-			case "down":{
-				moveUp();
-				break;
-			}
-			}
-			
 		}
-		
+		setVisible(false);
+		repaint();
+		setVisible(true);
 	}
 	
+	
+
+	
 		
-		
+
 	
 
 }

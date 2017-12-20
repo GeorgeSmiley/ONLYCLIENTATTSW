@@ -32,21 +32,33 @@ public class GUI extends JFrame {
 	private GUIpanel panel;
 	private JPanel NORTH,SOUTH;
 	private JTextField server,port,urlToPath,urlToAll,urlToGrid;
-	private JButton perform,createConnector;
+	private JButton perform,createConnector,reset;
 	private JComboBox<String> actions,comboCity;
 	private Client cl;
+	private boolean GRID_ENABLED,PATH_ENABLED;
 	public GUI() {
 		super("ATTSW Project 17/18");
 		createWidgets();
 		addWidgetsToFrame();
 		graphicalAdjustements();
-		cl=new Client();
 		createEvents();
-		
+		cl=new Client();
+		GRID_ENABLED=PATH_ENABLED=false;
 		
 	}
 	private void createEvents() {
 		
+		reset.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				panel.reset();
+				PATH_ENABLED=false;
+				comboCity.setEnabled(true);
+				
+			}
+			
+		});
 		createConnector.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String serverurl=server.getText();
@@ -66,7 +78,6 @@ public class GUI extends JFrame {
 				String cmd=(String) actions.getSelectedItem();
 				switch(cmd){
 				case "Show cities":{
-					
 					try {
 						List<String> cities=cl.getAllTables();
 						comboCity.removeAllItems();
@@ -81,22 +92,46 @@ public class GUI extends JFrame {
 					} catch(NullPointerException e) {
 						JOptionPane.showMessageDialog(null,"You must create connector before performing operations!");
 					}
-					
+					GRID_ENABLED=true;
 					break;
 				}
 				case "Request city":{
-					
+					if(!GRID_ENABLED) {
+						JOptionPane.showMessageDialog(null, "Must retrieve all cities first!");
+						break;
+					}
 					try {
-						
+						panel.reset();
 						GridFromServer grid=cl.retrieveGrid((String)comboCity.getSelectedItem());
-						GraphBuilder gb=new GraphBuilder();
-						gb.makeGraph(grid, panel);
-						panel.setVisible(false);
-						panel.setVisible(true);
+						GraphBuilder.makeGraph(grid, panel);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
+					comboCity.setEnabled(false);
+					PATH_ENABLED=true;
+					break;
+				}
+				case "Request path":{
+					if(!PATH_ENABLED) {
+						JOptionPane.showMessageDialog(null, "Must retrieve a grid first!");
+						break;
+					}
+						String from=JOptionPane.showInputDialog(null,"Insert source node");
+						String to=JOptionPane.showInputDialog(null,"Insert sink node");
+						try {
+							panel.highlightPath(null);
+							List<String> minPath=cl.getShortestPath(from,to,(String)comboCity.getSelectedItem());
+							panel.highlightPath(minPath);
+						} catch (JsonSyntaxException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					
 					break;
 				}
 				}
@@ -110,9 +145,9 @@ public class GUI extends JFrame {
 		setVisible(true);
 		server.setText("localhost");
 		port.setText("8080");
-		urlToAll.setText("/");
-		urlToPath.setText("/");
-		urlToGrid.setText("/");
+		urlToAll.setText("/api/");
+		urlToPath.setText("/api/path");
+		urlToGrid.setText("/api/city");
 	}
 	private void addWidgetsToFrame() {
 		NORTH.add(new JLabel("Host"));
@@ -129,6 +164,7 @@ public class GUI extends JFrame {
 		SOUTH.add(actions);
 		SOUTH.add(perform);
 		SOUTH.add(comboCity);
+		SOUTH.add(reset);
 		Container c=getContentPane();
 		
 		c.add(NORTH,BorderLayout.NORTH);
@@ -138,7 +174,7 @@ public class GUI extends JFrame {
 	private void createWidgets() {
 		NORTH=new JPanel();
 		SOUTH=new JPanel();
-		panel=new GUIpanel(20);
+		panel=new GUIpanel(20,300,150);
 		server=new JTextField(10);
 		port=new JTextField(6);
 		urlToPath=new JTextField(10);
@@ -150,6 +186,7 @@ public class GUI extends JFrame {
 			actions.addItem(e);
 		}
 		createConnector=new JButton("Create connector");
+		reset=new JButton("Reset");
 		comboCity=new JComboBox<String>();
 	}
 	public static void main(String[] args) {

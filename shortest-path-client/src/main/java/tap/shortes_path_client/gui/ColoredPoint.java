@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 
 
-public class EnablingPoint {
+public class ColoredPoint {
 	private int x,y;
 	private String name;
 	public int getX() {
@@ -20,26 +20,18 @@ public class EnablingPoint {
 	public void setY(int y) {
 		this.y = y;
 	}
-	private boolean isEnabled;
+
 	private Color col;
-	public EnablingPoint(int x, int y) {
+	public ColoredPoint(int x, int y, Color col) {
 		this.x=x;
 		this.y=y;
-		this.isEnabled=false;
+		this.col=col;
 	}
-	public void enable() {
-		isEnabled=true;
-	}
-	public void disable() {
-		isEnabled=false;
-	}
-	public boolean isEnabled() {
-		return isEnabled;
-	}
+
 	public void draw(Graphics g,int width,int height) {
 		g.setColor(col);
 		g.fillOval(this.x-width/2, this.y-height/2, width, height);
-		g.drawString(name, x, y);
+		if(name!=null) g.drawString(name, x, y);
 	}
 	public String getName() {
 		return name;
@@ -53,6 +45,9 @@ public class EnablingPoint {
 	public void setColor(Color col) {
 		this.col=col;
 		
+	}
+	public Color getCol() {
+		return this.col;
 	}
 
 }

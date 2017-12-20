@@ -27,8 +27,8 @@ public class ClientTest {
 	public void testGetPath() throws IOException {
 		String fromName="node1";
 		String toName="node2";
-		client.getShortestPath(fromName,toName);
-		verify(service,times(1)).doGet(Request.REQUEST_PATH, fromName+"TO"+toName);
+		client.getShortestPath(fromName,toName,"where");
+		verify(service,times(1)).doGet(Request.REQUEST_PATH, fromName+"TO"+toName+"where");
 	
 	}
 	

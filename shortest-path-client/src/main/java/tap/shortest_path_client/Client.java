@@ -29,8 +29,8 @@ public class Client implements IClient {
 		return gson.fromJson(rcv,List.class);
 	}
 
-	public List<String> getShortestPath(String fromName, String toName) throws JsonSyntaxException, IOException  {
-		String rcv=(restclient.doGet(Request.REQUEST_PATH, fromName+"TO"+toName));
+	public List<String> getShortestPath(String fromName, String toName, String where) throws JsonSyntaxException, IOException  {
+		String rcv=(restclient.doGet(Request.REQUEST_PATH, fromName+"TO"+toName+"IN"+where));
 		return gson.fromJson(rcv, List.class);
 	}
 	@Override
