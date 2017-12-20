@@ -29,7 +29,7 @@ public class GUIpanel extends JPanel {
 		for(int i=0; i<MAX_SIZE;i++) {
 			for(int j=0; j<MAX_SIZE;j++)
 			{
-				GRID[i][j]=new ColoredPoint(offset_x+i*distance,offset_y+j*distance,getBackground());
+				GRID[j][i]=new ColoredPoint(offset_x+i*distance,offset_y+j*distance,getBackground());
 			}
 		}
 		

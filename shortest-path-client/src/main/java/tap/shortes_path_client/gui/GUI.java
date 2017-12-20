@@ -122,6 +122,7 @@ public class GUI extends JFrame {
 						try {
 							panel.highlightPath(null);
 							List<String> minPath=cl.getShortestPath(from,to,(String)comboCity.getSelectedItem());
+							if(minPath.isEmpty()) JOptionPane.showMessageDialog(null, "No paths found from source node to sink!");
 							panel.highlightPath(minPath);
 						} catch (JsonSyntaxException e) {
 							// TODO Auto-generated catch block
