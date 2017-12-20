@@ -67,8 +67,19 @@ public class GUI extends JFrame {
 				String urltopath=prefix+urlToPath.getText();
 				String urltoall=prefix+urlToAll.getText();
 				String urltogrid=prefix+urlToGrid.getText();
-				cl.setRestServiceClient(new RestServiceClient(urltoall,urltopath,urltogrid));
-				JOptionPane.showMessageDialog(null, "Connector created");
+				String user=JOptionPane.showInputDialog(null,"Insert username");
+				String password=JOptionPane.showInputDialog(null,"Insert password");
+				try {
+					cl.setRestServiceClient(new RestServiceClient(urltoall,urltopath,urltogrid,user,password));
+					JOptionPane.showMessageDialog(null, "Login is OK.\nConnector created");
+				} catch (RuntimeException e) {
+					JOptionPane.showMessageDialog(null, e.getMessage());
+					cl.setRestServiceClient(null);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null, "Cannot connect to the server");
+					cl.setRestServiceClient(null);
+				}
+				
 			}
 		});
 		perform.addActionListener(new ActionListener() {

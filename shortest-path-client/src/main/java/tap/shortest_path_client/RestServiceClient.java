@@ -7,23 +7,32 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import sun.misc.BASE64Encoder;
+
 
 
 
 public class RestServiceClient implements IRestServiceClient {
 
-	private String urlToAll,urlToPath,urlToGrid;
-
+	private String urlToAll,urlToPath,urlToGrid,username,password;
+	
 	public RestServiceClient() {
 		
 	}
-	public RestServiceClient(String urlToAll, String urlToPath, String urlToGrid) {
+	public RestServiceClient(String urlToAll, String urlToPath, String urlToGrid, String user, String password) throws RuntimeException, IOException {
 		this.urlToAll=urlToAll;
 		this.urlToPath=urlToPath;
 		this.urlToGrid=urlToGrid;
+		this.username=user;
+		this.password=password;
+		doLogin();
 	}
 	
 	
+	private void doLogin() throws RuntimeException, IOException {
+		getConnection(urlToAll);
+		
+	}
 	private String read(HttpURLConnection conn) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(
 				(conn.getInputStream())));
@@ -73,18 +82,20 @@ public class RestServiceClient implements IRestServiceClient {
 		
 	}
 	
-	private HttpURLConnection getConnection(String url) throws IOException {
+	private HttpURLConnection getConnection(String url) throws IOException,RuntimeException {
 		
 		URL _url = new URL(url);
-		
-		HttpURLConnection conn = (HttpURLConnection) _url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.setRequestProperty("Accept", "application/json");
-		if (conn.getResponseCode() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ conn.getResponseCode());
-		}
-		return conn;
+	      HttpURLConnection connection = (HttpURLConnection)_url.openConnection();
+	      connection.setRequestMethod("GET");
+	      BASE64Encoder enc = new sun.misc.BASE64Encoder();
+	      String userpassword = username + ":" + password;
+	      String encodedAuthorization = enc.encode( userpassword.getBytes() );
+	      connection.setRequestProperty("Authorization", "Basic "+
+	            encodedAuthorization);
+	      int resp=connection.getResponseCode();
+	      if(resp==401) throw new RuntimeException("Wrong username or password");
+	      if(resp!=200) throw new RuntimeException("Cannot comunicate with server");
+	      return connection;
 	}
 	
 	private String manageAll()  {
