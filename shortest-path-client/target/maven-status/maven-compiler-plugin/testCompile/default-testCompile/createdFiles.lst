@@ -1,0 +1,4 @@
+tap/shortest_path_client/ClientTest.class
+tap/shortest_path_client/AppTest.class
+tap/shortest_path_client/RestServiceClientTest.class
+tap/shortest_path_client/NodeTest.class

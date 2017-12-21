@@ -16,7 +16,6 @@ public class RestServiceClientTest {
 	public void setUp() throws MalformedURLException {
 		client=new RestServiceClient();
 
-		
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -26,10 +25,10 @@ public class RestServiceClientTest {
 	}
 	@Test
 	public void testRequestAllNodes() {
-		assertEquals("ALL: CONNECTION REFUSED",client.doGet(Request.REQUEST_ALL, null));
+		assertEquals("CONNECTION REFUSED",client.doGet(Request.REQUEST_ALL, null));
 	}
 	@Test
 	public void testRequestPath() {
-		assertEquals("PATH: CONNECTION REFUSED",client.doGet(Request.REQUEST_PATH, null));
+		assertEquals("CONNECTION REFUSED",client.doGet(Request.REQUEST_PATH, null));
 	}
 }
