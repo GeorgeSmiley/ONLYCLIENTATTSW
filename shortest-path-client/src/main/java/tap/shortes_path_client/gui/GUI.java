@@ -2,6 +2,7 @@ package tap.shortes_path_client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
@@ -141,7 +142,7 @@ public class GUI extends JFrame {
 					tryToHighlightPath(from, to);
 				} catch (JsonSyntaxException e) {
 					JOptionPane.showMessageDialog(null, Messages.getString("GUI.ERROR_JSON"));
-				} catch (IOException e) {
+				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, Messages.getString("GUI.SERVER_CANNOT_PERFORM_OP")); 
 				}
 			}
@@ -158,9 +159,9 @@ public class GUI extends JFrame {
 					panel.reset();
 					GridFromServer grid=cl.retrieveGrid((String)comboCity.getSelectedItem());
 					GraphBuilder.makeGraph(grid, panel);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, Messages.getString("GUI.SERVER_CANNOT_PERFORM_OP"));
-				}
+				} 
 				comboCity.setEnabled(false);
 				PATH_ENABLED=true;
 			}
@@ -255,8 +256,17 @@ public class GUI extends JFrame {
 		SOUTH=new JPanel();
 		panel=new GUIpanel(20);
 	}
-	public static void main(String[] args) {
+	private static void createGui() {
 		new GUI();
+	}
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				createGui();
+				
+			}});
 	}
 
 }
