@@ -1,7 +1,6 @@
 package tap.shortest_path_client;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -24,19 +23,21 @@ public class Client implements IClient {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public List<String> getAllTables() throws JsonSyntaxException, IOException {
 		String rcv=(restclient.doGet(Request.REQUEST_ALL,null));
-		return gson.fromJson(rcv,List.class);
+		return (List<String>)(gson.fromJson(rcv,List.class));
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<String> getShortestPath(String fromName, String toName, String where) throws JsonSyntaxException, IOException  {
 		String rcv=(restclient.doGet(Request.REQUEST_PATH, fromName+"TO"+toName+"IN"+where));
-		return gson.fromJson(rcv, List.class);
+		return (List<String>)(gson.fromJson(rcv, List.class));
 	}
 	@Override
 	public GridFromServer retrieveGrid(String name) throws IOException {
 		GridFromServer retrieved = gson.fromJson(restclient.doGet(Request.REQUEST_GRID, name), GridFromServer.class);
 		return retrieved;
 	}
-
+	
 }

@@ -1,6 +1,7 @@
 package tap.shortes_path_client.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 
@@ -31,7 +32,8 @@ public class ColoredPoint {
 	public void draw(Graphics g,int width,int height) {
 		g.setColor(col);
 		g.fillOval(this.x-width/2, this.y-height/2, width, height);
-		if(name!=null) g.drawString(name, x, y);
+		g.setFont(g.getFont().deriveFont(Font.BOLD));
+		if(name!=null) g.drawString(name, x+width/2, y-height/2);
 	}
 	public String getName() {
 		return name;

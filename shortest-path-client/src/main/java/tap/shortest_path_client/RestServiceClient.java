@@ -5,7 +5,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 import sun.misc.BASE64Encoder;
 
@@ -19,13 +32,15 @@ public class RestServiceClient implements IRestServiceClient {
 	public RestServiceClient() {
 		
 	}
-	public RestServiceClient(String urlToAll, String urlToPath, String urlToGrid, String user, String password) throws RuntimeException, IOException {
+	public RestServiceClient(String urlToAll, String user, String password) throws RuntimeException, IOException {
 		this.urlToAll=urlToAll;
-		this.urlToPath=urlToPath;
-		this.urlToGrid=urlToGrid;
+		this.urlToPath=urlToAll+Messages.getString("RestServiceClient.DEFAULT_PPATH"); 
+		this.urlToGrid=urlToAll+Messages.getString("RestServiceClient.DEFAULT_GPATH"); 
 		this.username=user;
 		this.password=password;
 		doLogin();
+		
+		
 	}
 	
 	
@@ -58,12 +73,14 @@ public class RestServiceClient implements IRestServiceClient {
 			case Request.REQUEST_GRID:{
 				return manageGrid(args);
 			}
+			
 			default:{
-				throw new IllegalArgumentException("Unvalid request");
+				throw new IllegalArgumentException(Messages.getString("RestServiceClient.UNVALID_REQUEST")); 
 				
 			}
 		}
 	}
+	
 	private String manage(String url, String args) {
 		try {
 			HttpURLConnection conn=getConnection(url+args);
@@ -71,7 +88,7 @@ public class RestServiceClient implements IRestServiceClient {
 			return read(conn);
 		}catch(IOException exc) {
 			exc.printStackTrace();
-			return "CONNECTION REFUSED";
+			return Messages.getString("RestServiceClient.CONNECTION_REFUSED_EXCEPTION"); 
 		}
 	}
 	private String manageGrid(String args) {
@@ -84,22 +101,38 @@ public class RestServiceClient implements IRestServiceClient {
 	
 	private HttpURLConnection getConnection(String url) throws IOException,RuntimeException {
 		
-		URL _url = new URL(url);
-	      HttpURLConnection connection = (HttpURLConnection)_url.openConnection();
-	      connection.setRequestMethod("GET");
-	      BASE64Encoder enc = new sun.misc.BASE64Encoder();
-	      String userpassword = username + ":" + password;
-	      String encodedAuthorization = enc.encode( userpassword.getBytes() );
-	      connection.setRequestProperty("Authorization", "Basic "+
+		HttpURLConnection connection = createConnection(url); 
+	    String encodedAuthorization = encodeUserPass();
+	    setRequest(connection, encodedAuthorization);
+	    checkServerResponse(connection); 
+	    return connection;
+	}
+	private void checkServerResponse(HttpURLConnection connection) throws IOException {
+		int resp=connection.getResponseCode();
+	    if(resp==401) throw new RuntimeException(Messages.getString("RestServiceClient.WRONG_USERPASS_EXCEPTION")); 
+	    if(resp!=200) throw new RuntimeException(Messages.getString("RestServiceClient.SERVER_RETURNED_ERROR_EXCEPTION")+resp);
+	}
+	private void setRequest(HttpURLConnection connection, String encodedAuthorization) {
+		connection.setRequestProperty(Messages.getString("RestServiceClient.AUTH"), Messages.getString("RestServiceClient.ENCODE_BASIC")+ 
 	            encodedAuthorization);
-	      int resp=connection.getResponseCode();
-	      if(resp==401) throw new RuntimeException("Wrong username or password");
-	      if(resp!=200) throw new RuntimeException("Cannot comunicate with server");
-	      return connection;
+	}
+	@SuppressWarnings("restriction")
+	private String encodeUserPass() {
+		BASE64Encoder enc = new sun.misc.BASE64Encoder();
+	    String userpassword = username + ":" + password; 
+	    String encodedAuthorization = enc.encode( userpassword.getBytes() );
+		return encodedAuthorization;
+	}
+	private HttpURLConnection createConnection(String url)
+			throws MalformedURLException, IOException, ProtocolException {
+		URL _url = new URL(url);
+	    HttpURLConnection connection = (HttpURLConnection)_url.openConnection();
+	    connection.setRequestMethod(Messages.getString("RestServiceClient.GET_METHOD"));
+		return connection;
 	}
 	
 	private String manageAll()  {
-		return manage(urlToAll,"");
+		return manage(urlToAll,Messages.getString("RestServiceClient.EMPTY_STRING")); 
 	}
 	
 	public String getUrlToPath() {
@@ -123,6 +156,7 @@ public class RestServiceClient implements IRestServiceClient {
 	public void setUrlToGrid(String urlToGrid) {
 		this.urlToGrid = urlToGrid;
 	}
+	
 
 	
 }

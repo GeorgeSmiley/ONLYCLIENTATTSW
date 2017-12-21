@@ -28,7 +28,7 @@ public class ClientTest {
 		String fromName="node1";
 		String toName="node2";
 		client.getShortestPath(fromName,toName,"where");
-		verify(service,times(1)).doGet(Request.REQUEST_PATH, fromName+"TO"+toName+"where");
+		verify(service,times(1)).doGet(Request.REQUEST_PATH, fromName+"TO"+toName+"INwhere");
 	
 	}
 	
