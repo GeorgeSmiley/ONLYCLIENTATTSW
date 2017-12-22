@@ -21,7 +21,9 @@ public class Client implements IClient {
 		this.restclient=restclient;
 		
 	}
-
+	public void doLogin() throws RuntimeException, IOException {
+		restclient.doLogin();
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<String> getAllTables() throws JsonSyntaxException, IOException {

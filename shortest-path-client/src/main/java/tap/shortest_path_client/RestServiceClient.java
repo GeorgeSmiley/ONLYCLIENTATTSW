@@ -32,19 +32,19 @@ public class RestServiceClient implements IRestServiceClient {
 	public RestServiceClient() {
 		
 	}
-	public RestServiceClient(String urlToAll, String user, String password) throws RuntimeException, IOException {
+	public RestServiceClient(String urlToAll, String user, String password) {
 		this.urlToAll=urlToAll;
 		this.urlToPath=urlToAll+Messages.getString("RestServiceClient.DEFAULT_PPATH"); 
 		this.urlToGrid=urlToAll+Messages.getString("RestServiceClient.DEFAULT_GPATH"); 
 		this.username=user;
 		this.password=password;
-		doLogin();
+		
 		
 		
 	}
 	
 	
-	private void doLogin() throws RuntimeException, IOException {
+	public void doLogin() throws RuntimeException, IOException {
 		getConnection(urlToAll);
 		
 	}
@@ -87,7 +87,7 @@ public class RestServiceClient implements IRestServiceClient {
 			
 			return read(conn);
 		}catch(IOException exc) {
-			exc.printStackTrace();
+
 			return Messages.getString("RestServiceClient.CONNECTION_REFUSED_EXCEPTION"); 
 		}
 	}
