@@ -23,6 +23,8 @@ public class Client implements IClient {
 	}
 	public void doLogin() throws RuntimeException, IOException {
 		restclient.doLogin();
+		if(restclient.getLastResponse()==401) throw new RuntimeException(Messages.getString("RestServiceClient.WRONG_USERPASS_EXCEPTION"));
+		
 	}
 
 	@SuppressWarnings("unchecked")

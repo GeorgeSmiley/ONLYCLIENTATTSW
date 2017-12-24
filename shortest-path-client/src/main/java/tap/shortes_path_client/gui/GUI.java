@@ -3,27 +3,19 @@ package tap.shortes_path_client.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -64,41 +56,29 @@ public class GUI extends JFrame {
 		graphicalAdjustements();
 		createEvents();
 	}
-	private void repaintAllGraph() {
-		setVisible(true);
-		repaint();
-		revalidate();
-	}
+
 	private void alert(String message) {
 		lblout.setText(message);
 	}
-	public void resizeGrid(int rotation) {
-		if(rotation>0) {
-			panel.reduceCoordinatesOfPoints();
-		}
-		else
-		{
-			panel.enlargeCoordinatesOfPoints();
-		}
-		repaintAllGraph();
-	}
+	
+
 	public void resetPane() {
 		panel.reset();
 		PATH_ENABLED=false;
 		comboCity.setEnabled(true);
 	}
-	public void createConnection() {
-		String prefix=Messages.getString("GUI.HTTP")+server.getText()+":"+port.getText();  //$NON-NLS-1$ //$NON-NLS-2$
+	private void createConnection() {
+		String prefix=Messages.getString("GUI.HTTP")+server.getText()+":"+port.getText();  //$NON-NLS-1$ 
 		String urltoall=prefix+urlToAll.getText();
 		String user=userField.getText();
 		if(user.length()==0) {
-			alert(Messages.getString("GUI.INSERT_USERNAME")); //$NON-NLS-1$
+			alert("Error, must insert username"); //$NON-NLS-1$
 			return;
 		}
 		
 		String password=new String(passField.getPassword());
 		if(password.length()==0) {
-			alert(Messages.getString("GUI.INSERT_PASSWORD")); //$NON-NLS-1$
+			alert("Error, must insert password"); //$NON-NLS-1$
 			return;
 		}
 		RestServiceClient rsc=(new RestServiceClient(urltoall,user,password));
@@ -109,14 +89,14 @@ public class GUI extends JFrame {
 			CONN_CREATED=true;
 			alert(Messages.getString("GUI.LOGIN_OK"));  //$NON-NLS-1$
 		} catch (RuntimeException e) {
-			alert( Messages.getString("GUI.LOGIN_NOK"));
+			alert( Messages.getString("GUI.LOGIN_NOK")); //$NON-NLS-1$
 			cl.setRestServiceClient(null);
 		} catch (IOException e) {
 			alert( Messages.getString("GUI.SERVER_CONN_REFUSED"));  //$NON-NLS-1$
 			cl.setRestServiceClient(null);
 		}
 	}
-	public void requestPath() {
+	private void requestPath() {
 		String from=txtsource.getText();
 		if(from.length()==0) {
 			alert(Messages.getString("GUI.INSERT_SOURCE"));  //$NON-NLS-1$
@@ -134,45 +114,44 @@ public class GUI extends JFrame {
 		} catch (IOException e) {
 			alert(Messages.getString("GUI.SERVER_CONN_REFUSED"));  //$NON-NLS-1$
 		} catch(NullPointerException e) {
-			alert(Messages.getString("GUI.NO_CONNECTOR"));
+			alert(Messages.getString("GUI.NO_CONNECTOR")); //$NON-NLS-1$
 		}
 	}
 
 	private void tryToHighlightPath(String from, String to) throws IOException {
 		panel.highlightPath(null);
 		List<String> minPath=cl.getShortestPath(from,to,(String)comboCity.getSelectedItem());
-		alert(Messages.getString("GUI.QUERY_OK"));
+		alert(Messages.getString("GUI.QUERY_OK")); //$NON-NLS-1$
 		if(minPath.isEmpty()) alert(Messages.getString("GUI.NO_PATHS_FOUND")); //$NON-NLS-1$
 		panel.highlightPath(minPath);
 		
 	}
 
-	public void requestGrid() {
+	private void requestGrid() {
 		try {
 			panel.reset();
 			GridFromServer grid=cl.retrieveGrid((String)comboCity.getSelectedItem());
 			GraphBuilder.makeGraph(grid, panel);
-			alert(Messages.getString("GUI.QUERY_OK"));
+			alert(Messages.getString("GUI.QUERY_OK")); //$NON-NLS-1$
 		} catch (IOException e) {
 			alert(Messages.getString("GUI.SERVER_CONN_REFUSED")); //$NON-NLS-1$
 		}  catch(JsonSyntaxException e) {
-			alert(Messages.getString("GUI.SERVER_CANNOT_PERFORM_OP"));
+			alert(Messages.getString("GUI.SERVER_CANNOT_PERFORM_OP")); //$NON-NLS-1$
 		} catch(NullPointerException e) {
-			alert(Messages.getString("GUI.NO_CONNECTOR"));
+			alert(Messages.getString("GUI.NO_CONNECTOR")); //$NON-NLS-1$
 		}
 		comboCity.setEnabled(false);
 		PATH_ENABLED=true;
 	}
 
-	public void requestAll() {
+	private void requestAll() {
 		try {
 			tryToGetAllTables();
-			alert(Messages.getString("GUI.QUERY_OK"));
-		} catch (JsonSyntaxException e) {
-			alert(Messages.getString("GUI.SERVER_CANNOT_PERFORM_OP")); //$NON-NLS-1$
+			alert(Messages.getString("GUI.QUERY_OK")); //$NON-NLS-1$
 		} catch (IOException e) {
-			alert(Messages.getString("GUI.SERVER_CONN_REFUSED"));  //$NON-NLS-1$
-			
+			alert(Messages.getString("GUI.SERVER_CONN_REFUSED")); //$NON-NLS-1$
+		}  catch(JsonSyntaxException e) {
+			alert(Messages.getString("GUI.SERVER_CANNOT_PERFORM_OP")); //$NON-NLS-1$
 		} catch(NullPointerException e) {
 			alert(Messages.getString("GUI.NO_CONNECTOR")); //$NON-NLS-1$
 		}
@@ -188,15 +167,7 @@ public class GUI extends JFrame {
 	}
 	private void createEvents() {
 		
-		panel.addMouseWheelListener(new MouseWheelListener() {
-
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent arg0) {
-				resizeGrid(arg0.getWheelRotation());
-				
-			}
-
-			});
+		
 		reset.addActionListener(new ActionListener() {
 
 			@Override
@@ -242,8 +213,8 @@ public class GUI extends JFrame {
 						break;
 					}
 						requestPath();
-						txtsource.setText("");
-						txtsink.setText("");
+						txtsource.setText(""); //$NON-NLS-1$
+						txtsink.setText(""); //$NON-NLS-1$
 					
 					break;
 				}
@@ -266,8 +237,8 @@ public class GUI extends JFrame {
 		server.setText(Messages.getString("GUI.LOCALHOST"));  //$NON-NLS-1$
 		port.setText(Messages.getString("GUI.DEFAULT_PORT"));  //$NON-NLS-1$
 		urlToAll.setText(Messages.getString("GUI.DEFAULT_API_PATH")); //$NON-NLS-1$
-		userField.setText(Messages.getString("GUI.0")); //$NON-NLS-1$
-		passField.setText(Messages.getString("GUI.1")); //$NON-NLS-1$
+		userField.setText(Messages.getString("GUI.DEFAULT_USERNAME")); //$NON-NLS-1$
+		passField.setText(Messages.getString("GUI.DEFAULT_PASSWORD")); //$NON-NLS-1$
 	}
 	private void addWidgetsToFrame() {
 		addToNorth();
@@ -284,9 +255,9 @@ public class GUI extends JFrame {
 		SOUTH.add(actions);
 		
 		SOUTH.add(comboCity);
-		SOUTH.add(new JLabel(Messages.getString("GUI.9")));
+		SOUTH.add(new JLabel(Messages.getString("GUI.9"))); //$NON-NLS-1$
 		SOUTH.add(txtsource);
-		SOUTH.add(new JLabel(Messages.getString("GUI.10")));
+		SOUTH.add(new JLabel(Messages.getString("GUI.10"))); //$NON-NLS-1$
 		SOUTH.add(txtsink);
 		SOUTH.add(perform);
 		SOUTH.add(reset);
@@ -299,9 +270,9 @@ public class GUI extends JFrame {
 		NORTH.add(port);
 		NORTH.add(new JLabel(Messages.getString("GUI.4"))); //$NON-NLS-1$
 		NORTH.add(urlToAll);
-		NORTH.add(new JLabel(Messages.getString("GUI.7")));
+		NORTH.add(new JLabel(Messages.getString("GUI.7"))); //$NON-NLS-1$
 		NORTH.add(userField);
-		NORTH.add(new JLabel(Messages.getString("GUI.8")));
+		NORTH.add(new JLabel(Messages.getString("GUI.8"))); //$NON-NLS-1$
 		NORTH.add(passField);
 		NORTH.add(createConnector);
 	}
@@ -314,63 +285,59 @@ public class GUI extends JFrame {
 	}
 	private void createComboBoxes() {
 		actions=new JComboBox<String>();
-		actions.setName("actionsComboBox"); //$NON-NLS-1$
-		for(String e:(Arrays.asList(Messages.getString("GUI.SHOW_GRIDS"),Messages.getString("GUI.REQUEST_GRID"),Messages.getString("GUI.REQUEST_PATH")))){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		actions.setName(Messages.getString("GUI.NAMES.ACTIONSCOMBO")); //$NON-NLS-1$
+		String show=Messages.getString("GUI.SHOW_GRIDS");
+		String reqgr=Messages.getString("GUI.REQUEST_GRID");
+		String reqpth=Messages.getString("GUI.REQUEST_PATH");
+		for(String e:(Arrays.asList(show,reqgr,reqpth))){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			actions.addItem(e);
 		}
 		comboCity=new JComboBox<String>();
-		comboCity.setName("gridComboBox"); //$NON-NLS-1$
+		comboCity.setName(Messages.getString("GUI.NAMES.GRIDCOMBO")); //$NON-NLS-1$
 	}
 	private void createButtons() {
-		perform=new JButton("Perform");  //$NON-NLS-1$
-		perform.setName("performButton"); //$NON-NLS-1$
-		createConnector=new JButton("Create connector"); //$NON-NLS-1$
-		createConnector.setName("createConnectorButton"); //$NON-NLS-1$
-		reset=new JButton("Reset"); //$NON-NLS-1$
-		reset.setName("resetButton"); //$NON-NLS-1$
+		perform=new JButton(Messages.getString("GUI.11"));  //$NON-NLS-1$
+		perform.setName(Messages.getString("GUI.NAMES.BTNPERFORM")); //$NON-NLS-1$
+		createConnector=new JButton(Messages.getString("GUI.13")); //$NON-NLS-1$
+		createConnector.setName(Messages.getString("GUI.NAMES.BTNCONNECT")); //$NON-NLS-1$
+		reset=new JButton(Messages.getString("GUI.12")); //$NON-NLS-1$
+		reset.setName(Messages.getString("GUI.NAMES.BTNRESET")); //$NON-NLS-1$
 	}
 	private void createTextFields() {
 		server=new JTextField(10);
-		server.setName("serverField"); //$NON-NLS-1$
+		server.setName(Messages.getString("GUI.NAMES.SERVERFIELD")); //$NON-NLS-1$
 		port=new JTextField(6);
-		port.setName("portField"); //$NON-NLS-1$
+		port.setName(Messages.getString("GUI.NAMES.PORTFIELD")); //$NON-NLS-1$
 		urlToAll=new JTextField(10);
-		urlToAll.setName("urlToApiField"); //$NON-NLS-1$
+		urlToAll.setName(Messages.getString("GUI.NAMES.APIFIELD")); //$NON-NLS-1$
 		lblout=new JLabel();
-		lblout.setName("outputLabel"); //$NON-NLS-1$
+		lblout.setName(Messages.getString("GUI.NAMES.OUTPUTLBL")); //$NON-NLS-1$
 		txtsource=new JTextField(4);
 		txtsink=new JTextField(4);
-		txtsource.setName("sourceField");
-		txtsink.setName("sinkField");
+		txtsource.setName(Messages.getString("GUI.NAMES.SOURCEFIELD")); //$NON-NLS-1$
+		txtsink.setName(Messages.getString("GUI.NAMES.SINKFIELD")); //$NON-NLS-1$
 		passField=new JPasswordField(10);
-		passField.setName("passField");
+		passField.setName(Messages.getString("GUI.NAMES.PASSFIELD")); //$NON-NLS-1$
 		userField=new JTextField(10);
-		userField.setName("userField");
+		userField.setName(Messages.getString("GUI.NAMES.USERFIELD")); //$NON-NLS-1$
 	}
 	private void createPanels() {
 		NORTH=new JPanel();
-		NORTH.setName("North Panel"); //$NON-NLS-1$
+		NORTH.setName(Messages.getString("GUI.NAMES.NORTHPANEL")); //$NON-NLS-1$
 		SOUTH=new JPanel();
-		SOUTH.setName("South Panel"); //$NON-NLS-1$
+		SOUTH.setName(Messages.getString("GUI.NAMES.SOUTHPANEL")); //$NON-NLS-1$
 		panel=new GUIpanel(20);
-		panel.setName("Gui Panel"); //$NON-NLS-1$
+		panel.setName(Messages.getString("GUI.NAMES.GUIPANEL")); //$NON-NLS-1$
 	}
-	private static void createGui() {
-		new GUI();
+	public static GUI createGui() {
+		return new GUI();
 	}
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				createGui();
-				
-			}});
-	}
+	
 	public void mockClient(IClient mock) {
 		this.cl=mock;
 		CONN_CREATED=(mock!=null);
 		
 	}
+	
 
 }

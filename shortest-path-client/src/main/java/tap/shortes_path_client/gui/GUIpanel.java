@@ -35,6 +35,9 @@ public class GUIpanel extends JPanel {
 		
 		
 	}
+	public Point getLocationOf(int i, int j) {
+		return GRID[i][j].getLocation();
+	}
 	private void initGrid(int MAX_SIZE) {
 		GRID=new Point[MAX_SIZE][MAX_SIZE];
 		GRIDCOL=new Color[MAX_SIZE][MAX_SIZE];
@@ -51,38 +54,13 @@ public class GUIpanel extends JPanel {
 		}
 		
 	}
-	private void resizeGrid() {
-		for(int i=0; i<GRIDSIZE;i++) {
-			for(int j=0; j<GRIDSIZE;j++)
-			{
-				
-				GRID[j][i].setLocation(offset_x+i*distance,offset_y+j*distance);
-				
-				
-			}
-		}
-		repaint();
-	}
-	public void enlargeCoordinatesOfPoints() {
-		distance++;
-		if(offset_x>0) offset_x--;
-		offset_y++;
-		resizeGrid();
-	}
-	public void reduceCoordinatesOfPoints() {
-		if(distance>0) 
-		{
-			distance--;
-			offset_x++;
-			if(offset_y>0)
-			offset_y--;
-			resizeGrid();
-		}
-	}
+	
+	
 	public void reset() {
 		for(int i=0; i<GRIDSIZE; i++) {
 			for(int j=0; j<GRIDSIZE;j++) {
 				GRIDCOL[i][j]=(getBackground());
+				GRIDNAMES[i][j]="";
 			}
 		}
 		setVisible(false);
@@ -98,11 +76,12 @@ public class GUIpanel extends JPanel {
 		
 	}
 	private void setColorToPoint(String toPrintInPoint, int i, int j,Color col) {
+		enablePointProcedure(toPrintInPoint, i, j, col);
+		repaint();
+	}
+	private void enablePointProcedure(String toPrintInPoint, int i, int j, Color col) {
 		GRIDNAMES[i][j]= new String(toPrintInPoint);
 		GRIDCOL[i][j]=(col);
-		setVisible(false);
-		repaint();
-		setVisible(true);
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -115,7 +94,7 @@ public class GUIpanel extends JPanel {
 				g.setColor(GRIDCOL[i][j]);
 				g.fillOval((int)GRID[i][j].getX()-8/2, (int)GRID[i][j].getY()-8/2, 8, 8);
 				g.setFont(g.getFont().deriveFont(Font.BOLD));
-				if(GRIDNAMES[i][j]!=null) g.drawString(GRIDNAMES[i][j], (int)GRID[i][j].getX()+8/2, (int)GRID[i][j].getY()-8/2);
+				g.drawString(GRIDNAMES[i][j], (int)GRID[i][j].getX()+8/2, (int)GRID[i][j].getY()-8/2);
 			}
 		}
 	
@@ -169,7 +148,17 @@ public class GUIpanel extends JPanel {
 	public int getDistance() {
 		return distance;
 	}
-	
+	public void enablePoint(String string, int i, int j, Graphics g2) {
+		enablePointProcedure(string,i,j,Color.RED);
+		paintComponent(g2);
+	}
+	public void enableNotHighlightablePoint(String string, int i, int j, Graphics g2) {
+		enablePointProcedure(string,i,j,Color.BLACK);
+		paintComponent(g2);
+	}
+	public Point[][] getAllLocations() {
+		return GRID.clone();
+	}
 	
 
 	

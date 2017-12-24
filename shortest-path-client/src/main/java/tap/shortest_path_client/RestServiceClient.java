@@ -8,19 +8,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.commons.codec.binary.Base64;
 
-import sun.misc.BASE64Encoder;
+
+
 
 
 
@@ -28,7 +20,7 @@ import sun.misc.BASE64Encoder;
 public class RestServiceClient implements IRestServiceClient {
 
 	private String urlToAll,urlToPath,urlToGrid,username,password;
-	
+	private int resp;
 	public RestServiceClient() {
 		
 	}
@@ -43,8 +35,10 @@ public class RestServiceClient implements IRestServiceClient {
 		
 	}
 	
-	
-	public void doLogin() throws RuntimeException, IOException {
+	public int getLastResponse() {
+		return this.resp;
+	}
+	public void doLogin() throws IOException {
 		getConnection(urlToAll);
 		
 	}
@@ -60,7 +54,7 @@ public class RestServiceClient implements IRestServiceClient {
 		return sb.toString();
 	}
 	
-	public String doGet(int request, String args) {
+	public String doGet(int request, String args) throws IOException {
 		switch(request) {
 		
 			case Request.REQUEST_ALL:{
@@ -81,20 +75,18 @@ public class RestServiceClient implements IRestServiceClient {
 		}
 	}
 	
-	private String manage(String url, String args) {
-		try {
+	private String manage(String url, String args) throws IOException {
+		
 			HttpURLConnection conn=getConnection(url+args);
-			
-			return read(conn);
-		}catch(IOException exc) {
-
-			return Messages.getString("RestServiceClient.CONNECTION_REFUSED_EXCEPTION"); 
-		}
+			if(conn!=null)
+				return read(conn);
+			return null;
+		
 	}
-	private String manageGrid(String args) {
+	private String manageGrid(String args) throws IOException {
 		return manage(urlToGrid,args);
 	}
-	private String managePath(String args)  {
+	private String managePath(String args) throws IOException  {
 		return manage(urlToPath,args);
 		
 	}
@@ -104,24 +96,21 @@ public class RestServiceClient implements IRestServiceClient {
 		HttpURLConnection connection = createConnection(url); 
 	    String encodedAuthorization = encodeUserPass();
 	    setRequest(connection, encodedAuthorization);
-	    checkServerResponse(connection); 
+	    this.resp=connection.getResponseCode();
 	    return connection;
 	}
-	private void checkServerResponse(HttpURLConnection connection) throws IOException {
-		int resp=connection.getResponseCode();
-	    if(resp==401) throw new RuntimeException(Messages.getString("RestServiceClient.WRONG_USERPASS_EXCEPTION")); 
-	    if(resp!=200) throw new RuntimeException(Messages.getString("RestServiceClient.SERVER_RETURNED_ERROR_EXCEPTION")+resp);
-	}
+	
+	
 	private void setRequest(HttpURLConnection connection, String encodedAuthorization) {
 		connection.setRequestProperty(Messages.getString("RestServiceClient.AUTH"), Messages.getString("RestServiceClient.ENCODE_BASIC")+ 
 	            encodedAuthorization);
 	}
-	@SuppressWarnings("restriction")
+
 	private String encodeUserPass() {
-		BASE64Encoder enc = new sun.misc.BASE64Encoder();
+		Base64 encoder=new Base64();
 	    String userpassword = username + ":" + password; 
-	    String encodedAuthorization = enc.encode( userpassword.getBytes() );
-		return encodedAuthorization;
+	    byte[] encodeduserpass= encoder.encode( userpassword.getBytes() );
+		return new String(encodeduserpass);
 	}
 	private HttpURLConnection createConnection(String url)
 			throws MalformedURLException, IOException, ProtocolException {
@@ -131,7 +120,7 @@ public class RestServiceClient implements IRestServiceClient {
 		return connection;
 	}
 	
-	private String manageAll()  {
+	private String manageAll() throws IOException  {
 		return manage(urlToAll,Messages.getString("RestServiceClient.EMPTY_STRING")); 
 	}
 	
